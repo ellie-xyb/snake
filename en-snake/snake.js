@@ -2,6 +2,8 @@ console.log("snakes");
 var gameCanvas = document.getElementById("snake");
 var context = gameCanvas.getContext("2d");
 var tileSize=20;
+var tileWidth=25;
+var tileHeight=20;
 
 
 var snake=[
@@ -18,6 +20,8 @@ var food={
     y:0,
 };
 
+food.x=Math.round(Math.random() * tileWidth);
+food.y=Math.round(Math.random()*tileHeight);
 
 function draw(){
     console.log("interval");              
@@ -44,15 +48,23 @@ function draw(){
         context.fillRect(tileSize*piece.x,tileSize*piece.y,tileSize,tileSize);
     } 
    
-    // Draw food
-    context.fillStyle="rgb(200,80,100)";
-    /* context.fillRect(tileSize*15,tileSize*9,tileSize,tileSize);*/
-    context.fillRect(tileSize*food.x,tileSize*food.y,tileSize,tileSize);
+    
 
 
     //remove the last piece of snake
-    snake.pop();
+    
 
+    if (snake[0].x===food.x && snake[0].y===food.y){
+              food.x=Math.round(Math.random()*tileWidth);
+        food.y=Math.round(Math.random()*tileHeight);
+    }
+
+    else {snake.pop();}
+
+// Draw food
+context.fillStyle="rgb(200,80,100)";
+/* context.fillRect(tileSize*15,tileSize*9,tileSize,tileSize);*/
+context.fillRect(tileSize*food.x,tileSize*food.y,tileSize,tileSize);
 
     //add a new piece to the head of the snake
     if(direction==="right"){
