@@ -20,23 +20,15 @@ var food={
     y:0,
 };
 
-food.x=Math.round(Math.random() * tileWidth);
-food.y=Math.round(Math.random()*tileHeight);
+function snakeFood(){
+    food.y=Math.round(Math.random()*tileHeight);
+    food.x=Math.round(Math.random() * tileWidth);
+}
+snakeFood();
 
-function draw(){
-    console.log("interval");              
+var alertNeverShown = true;
 
-    // Clean the screen
-    context.clearRect(0,0,gameCanvas.width,gameCanvas.height);
-
-    // Draw snake 
-
-    /*context.fillStyle="rgb(80,100,200)";
-    for(var piece of snake){
-        context.fillRect(tileSize*piece.x,tileSize*piece.y,tileSize,tileSize);
-    } 
-    */
-
+function drawSnake(){
     for(var i=0; i<snake.length;i++){
         var piece=snake[i];
 
@@ -47,50 +39,89 @@ function draw(){
         context.fillStyle="rgba(0,0,"+blue+",0.7)";
         context.fillRect(tileSize*piece.x,tileSize*piece.y,tileSize,tileSize);
     } 
-   
-    
+}
+drawSnake();
 
+function drawFood(){
+    context.fillStyle="rgb(200,80,100)";
+    /* context.fillRect(tileSize*15,tileSize*9,tileSize,tileSize);*/
+    context.fillRect(tileSize*food.x,tileSize*food.y,tileSize,tileSize); 
+}
 
-    //remove the last piece of snake
-    
-
-    if (snake[0].x===food.x && snake[0].y===food.y){
-              food.x=Math.round(Math.random()*tileWidth);
-        food.y=Math.round(Math.random()*tileHeight);
-    }
-
-    else {snake.pop();}
-
-// Draw food
-context.fillStyle="rgb(200,80,100)";
-/* context.fillRect(tileSize*15,tileSize*9,tileSize,tileSize);*/
-context.fillRect(tileSize*food.x,tileSize*food.y,tileSize,tileSize);
-
-    //add a new piece to the head of the snake
+function getNextPiece() {
     if(direction==="right"){
-        snake.unshift({
+        return {
             x:snake[0].x+1,
             y:snake[0].y,
         
-        });
+        };
     } else if(direction==="down"){
-        snake.unshift({
+        return {
             x:snake[0].x,
             y:snake[0].y+1,
-        });
+        };
     } else if(direction==="up"){
-        snake.unshift({
+        return {
             x:snake[0].x,
             y:snake[0].y-1,
-        });
+        };
     } else if(direction==="left"){
-        snake.unshift({
+        return {
             x:snake[0].x-1,
             y:snake[0].y,
-        });
+        };
     }
-
 }
+
+function draw(){
+    // Clean the screen
+    context.clearRect(0,0,gameCanvas.width,gameCanvas.height);
+   
+    
+    //add a new piece to the head of the snake
+    snake.unshift(getNextPiece());
+
+
+    //remove the last piece of snake
+    if (snake[0].x===food.x && snake[0].y===food.y){
+        snakeFood();
+    }
+    else {snake.pop();}
+   
+    drawFood();
+    drawSnake();
+    
+    /* for(var i=1; i<snake.length;i++){
+        if (snake[0].x===snake[i].x && snake[0].y===snake[i].y){
+            alert("LOSER");
+        }
+    }*/    
+    
+    
+    if (outOfBounds()||jiaMa()) {
+        if(alertNeverShown){
+            alertNeverShown = false;
+            alert("LOSER");
+        }
+    }
+}
+
+function outOfBounds() {
+    return snake[0].x>=25 || snake[0].x<-1 || snake[0].y>=20 || snake[0].y<-1;
+}
+
+   
+
+function jiaMa(){
+    for(var i=1; i<snake.length;i++){
+        if (snake[0].x===snake[i].x && snake[0].y===snake[i].y){
+            return true;
+        }
+    }
+    return false
+   
+}
+
 
 function handleKeyDown(event){
     if(event.key==="ArrowUp"){
@@ -104,9 +135,10 @@ function handleKeyDown(event){
     }
 
     draw();
+  
 }
 
 document.addEventListener("keydown",handleKeyDown);
-
+ 
 window.setInterval(draw,400);
 
